@@ -188,7 +188,7 @@
     //"publicIpRef": "publicIp",
     //"brokerIpRef": "brokerpublicIp",
     //"gatewayIpRef": "gatewaypublicIp",
-    "assetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/rds-deployment/",
+    "assetLocation": "https://raw.githubusercontent.com/elamathiJv/rds-ha-complete/master/rds-sessionhost",
     "gatewayIndex": 1,
     "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 1)]",
     "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,1))]",

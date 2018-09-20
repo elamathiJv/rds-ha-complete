@@ -93,9 +93,20 @@
         "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
       },
       "defaultValue": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/rds-deployment-ha-broker/"
+    },
+    "numberOfGatewayInstances": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "vmPrefix": {
+      "type": "string"
     }
   },
   "variables": {
+    "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 1)]",
     "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-02')]",
     "brokerNicName": "[concat(variables('brokerVmName'), '-nic')]",
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'rdsstorage2')]",

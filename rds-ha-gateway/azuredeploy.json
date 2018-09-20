@@ -109,6 +109,9 @@
         "description": "The subnet name of AD domain. For example johnsubnet1"
       },
       "defaultValue": "Subnet"
+    },
+    "vmPrefix": {
+      "type": "string"
     }
   },
   "variables": {
@@ -121,7 +124,8 @@
     "publicIpRef": "publicIp",
     "assetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/rds-deployment",
     "apiVersion": "2015-06-15",
-    "PublicIPLocation": "[concat(parameters('dnsLabelPrefix'),'.','[resourceGroup().location]','.cloudapp.azure.com')]"
+    "PublicIPLocation": "[concat(parameters('dnsLabelPrefix'),'.','[resourceGroup().location]','.cloudapp.azure.com')]",
+    "gatewayIndex": 2
   },
   "resources": [
     {

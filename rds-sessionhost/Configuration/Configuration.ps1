@@ -153,7 +153,7 @@ configuration SessionHost
         [PSCredential]$adminCreds
     ) 
 
-Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xNetworking
+	Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xNetworking
     Node localhost
     {
         LocalConfigurationManager
@@ -213,6 +213,7 @@ configuration RDSDeployment
         # RD Session Host count and naming prefix
         [Int]$numberOfRdshInstances = 1,
         [String]$sessionHostNamingPrefix = "SessionHost-",
+		[Int]$sessionHostNamingIndex  = 3,
 
         # Collection Name
         [String]$collectionName,
@@ -234,9 +235,12 @@ configuration RDSDeployment
     if (-not $connectionBroker)   { $connectionBroker = $localhost }
     if (-not $webAccessServer)    { $webAccessServer  = $localhost }
 
+	[int]$sessionHostMaxIndex = $numberOfRdshInstances + $sessionHostNamingIndex - 1
+
     if ($sessionHostNamingPrefix)
     { 
-        $sessionHosts = @( 0..($numberOfRdshInstances-1) | % { "$sessionHostNamingPrefix$_.$domainname"} )
+
+        $sessionHosts = @( $sessionHostNamingIndex..($sessionHostMaxIndex) | % { "$sessionHostNamingPrefix$_$domainname"} )
     }
     else
     {

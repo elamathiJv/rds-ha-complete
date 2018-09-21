@@ -172,7 +172,7 @@
     "imageOffer": "WindowsServer",
     "ad-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
     "rds-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('rdsSubnetName'))]",
-    "assetLocation": "https://raw.githubusercontent.com/Azure/azure-QuickStart-Templates/master/rds-deployment/",
+    "assetLocation": "https://raw.githubusercontent.com/elamathiJv/rds-ha-complete/master/rds-sessionhost/",
     "gatewayIndex": "1",
     "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
     "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
@@ -445,14 +445,14 @@
                         "sku": "[parameters('imageSKU')]",
                         "version": "latest"
                     },
-                    "osDisk": {
-                        "name": "MdOVmWSBpamA01",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
+                  "osDisk": {
+                    "name": "[concat('MdO',parameters('vmPrefix'),0,variables('gatewayIndex'))]",
+                    "managedDisk": {
+                      "storageAccountType": "Standard_LRS"
+                    },
+                    "caching": "ReadWrite",
+                    "createOption": "FromImage"
+                  }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -607,14 +607,14 @@
                         "sku": "[parameters('imageSKU')]",
                         "version": "latest"
                     },
-                    "osDisk": {
-                        "name": "MdOVmWSBpamA03",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
+                  "osDisk": {
+                    "name": "[concat('MdO',parameters('vmPrefix'),0,variables('brokerIndex'))]",
+                    "managedDisk": {
+                      "storageAccountType": "Standard_LRS"
+                    },
+                    "caching": "ReadWrite",
+                    "createOption": "FromImage"
+                  }
                 },
                 "networkProfile": {
                     "networkInterfaces": [

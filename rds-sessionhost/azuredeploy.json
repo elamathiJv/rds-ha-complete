@@ -172,7 +172,7 @@
     "imageOffer": "WindowsServer",
     "ad-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
     "rds-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('rdsSubnetName'))]",
-    "assetLocation": "https://raw.githubusercontent.com/elamathiJv/rds-ha-complete/master/rds-sessionhost/",
+    "assetLocation": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment-existing-ad",
     "gatewayIndex": "1",
     "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
     "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
@@ -338,7 +338,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[variables('ad-subnet-id')]"
+                                "id": "[variables('rds-subnet-id')]"
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
@@ -462,39 +462,39 @@
                     ]
                 }
             },
-            "resources": [
-              {
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'),'/gateway')]",
-                "apiVersion": "2015-06-15",
-                "location": "[resourceGroup().location]",
-                "properties": {
-                  "publisher": "Microsoft.Powershell",
-                  "type": "DSC",
-                  "typeHandlerVersion": "2.11",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                    "ModulesUrl": "[concat(variables('assetLocation'),'/Configuration.zip')]",
-                    "ConfigurationFunction": "Configuration.ps1\\Gateway",
-                    "Properties": {
-                      "DomainName": "[parameters('adDomainName')]",
-                      "AdminCreds": {
-                        "UserName": "[parameters('adminUsername')]",
-                        "Password": "PrivateSettingsRef:AdminPassword"
-                      }
-                    }
-                  },
-                  "protectedSettings": {
-                    "Items": {
-                      "AdminPassword": "[parameters('adminPassword')]"
+          "resources": [
+            {
+              "apiVersion": "2015-06-15",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'),'/gateway')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.11",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "ModulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
+                  "ConfigurationFunction": "Configuration.ps1\\Gateway",
+                  "Properties": {
+                    "DomainName": "[parameters('adDomainName')]",
+                    "AdminCreds": {
+                      "UserName": "[parameters('adminUsername')]",
+                      "Password": "PrivateSettingsRef:AdminPassword"
                     }
                   }
                 },
-                "dependsOn": [
-                  "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('gatewayIndex')))]"
-                ]
-              }
-            ],
+                "protectedSettings": {
+                  "Items": {
+                    "AdminPassword": "[parameters('adminPassword')]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('gatewayIndex')))]"
+              ]
+            }
+          ],
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', variables('gatewayAvSetName'))]",
                 "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),0,variables('gatewayIndex')))]"
@@ -550,9 +550,9 @@
         },
         "resources": [
           {
+            "apiVersion": "2015-06-15",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()),'/sessionhost')]",
-            "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "properties": {
               "publisher": "Microsoft.Powershell",
@@ -560,7 +560,7 @@
               "typeHandlerVersion": "2.11",
               "autoUpgradeMinorVersion": true,
               "settings": {
-                "ModulesUrl": "[concat(variables('assetLocation'),'/Configuration.zip')]",
+                "ModulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
                 "ConfigurationFunction": "Configuration.ps1\\SessionHost",
                 "Properties": {
                   "DomainName": "[parameters('adDomainName')]",
@@ -631,17 +631,17 @@
             ]
         },
       {
+        "apiVersion": "2015-06-15",
         "type": "Microsoft.Compute/virtualMachines/extensions",
         "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'),'/rdsdeployment')]",
-        "apiVersion": "[variables('vmAPI')]",
         "location": "[resourceGroup().location]",
         "properties": {
           "publisher": "Microsoft.Powershell",
           "type": "DSC",
-          "typeHandlerVersion": "2.75",
+          "typeHandlerVersion": "2.11",
           "autoUpgradeMinorVersion": true,
           "settings": {
-            "modulesUrl": "[concat(variables('assetLocation'),'/Configuration.zip')]",
+            "modulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
             "configurationFunction": "Configuration.ps1\\RDSDeployment",
             "Properties": {
               "adminCreds": {

@@ -172,7 +172,7 @@
     "imageOffer": "WindowsServer",
     "ad-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
     "rds-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('rdsSubnetName'))]",
-    "assetLocation": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment-existing-ad",
+    "assetLocation": "https://github.com/elamathiJv/rds-ha-complete/blob/master/rds-sessionhost/",
     "gatewayIndex": "1",
     "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
     "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
@@ -390,37 +390,37 @@
                 "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
             ]
         },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
-            "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
-            "copy": {
-                "name": "rdsh-nic-loop",
-                "count": "[parameters('numberOfRdshInstances')]"
-            },
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[variables('rds-subnet-id')]"
-                            }
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": [
-                        "[parameters('dnsServerPrivateIp')]"
-                    ]
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
-            ]
+      {
+        "apiVersion": "2015-06-15",
+        "copy": {
+          "name": "rdsh-nic-loop",
+          "count": "[parameters('numberOfRdshInstances')]"
         },
+        "dependsOn": [
+          "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
+        ],
+        "location": "[resourceGroup().location]",
+        "name": "[concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "subnet": {
+                  "id": "[variables('rds-subnet-id')]"
+                }
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [
+              "[parameters('dnsServerPrivateIp')]"
+            ]
+          }
+        },
+        "type": "Microsoft.Network/networkInterfaces"
+      },
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'))]",
@@ -474,7 +474,7 @@
                 "typeHandlerVersion": "2.11",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                  "ModulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
+                  "ModulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
                   "ConfigurationFunction": "Configuration.ps1\\Gateway",
                   "Properties": {
                     "DomainName": "[parameters('adDomainName')]",
@@ -560,7 +560,7 @@
               "typeHandlerVersion": "2.11",
               "autoUpgradeMinorVersion": true,
               "settings": {
-                "ModulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
+                "ModulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
                 "ConfigurationFunction": "Configuration.ps1\\SessionHost",
                 "Properties": {
                   "DomainName": "[parameters('adDomainName')]",
@@ -641,7 +641,7 @@
           "typeHandlerVersion": "2.11",
           "autoUpgradeMinorVersion": true,
           "settings": {
-            "modulesUrl": "[concat(variables('assetLocation'),'/DSC/Configuration.zip')]",
+            "modulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
             "configurationFunction": "Configuration.ps1\\RDSDeployment",
             "Properties": {
               "adminCreds": {

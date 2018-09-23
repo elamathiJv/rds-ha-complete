@@ -97,6 +97,14 @@ configuration Gateway
         [Parameter(Mandatory)]
         [PSCredential]$adminCreds
     ) 
+
+
+	New-EventLog -LogName Application -Source ARM
+	Write-EventLog -EventId 5000 -LogName Application -Message $domainName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.UserName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.Password -Source ARM -EntryType Information
+	
+
     Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xNetworking
 
     Node localhost
@@ -153,6 +161,11 @@ configuration SessionHost
         [PSCredential]$adminCreds
     ) 
 
+	New-EventLog -LogName Application -Source ARM
+	Write-EventLog -EventId 5000 -LogName Application -Message $domainName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.UserName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.Password -Source ARM -EntryType Information
+	
 	Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xNetworking
     Node localhost
     {
@@ -202,13 +215,13 @@ configuration RDSDeployment
         [PSCredential]$adminCreds,
 
         # Connection Broker Node name
-        [String]$connectionBroker,
+        [String]$connectionBroker ="test",
         
         # Web Access Node name
-        [String]$webAccessServer,
+        [String]$webAccessServer="test",
 
         # Gateway external FQDN
-        [String]$externalFqdn,
+        [String]$externalFqdn ="test",
         
         # RD Session Host count and naming prefix
         [Int]$numberOfRdshInstances = 1,
@@ -216,12 +229,27 @@ configuration RDSDeployment
 		[Int]$sessionHostNamingIndex  = 3,
 
         # Collection Name
-        [String]$collectionName,
+        [String]$collectionName ="test",
 
         # Connection Description
-        [String]$collectionDescription
+        [String]$collectionDescription = "test"
 
     ) 
+
+	New-EventLog -LogName Application -Source ARM
+	Write-EventLog -EventId 5000 -LogName Application -Message $domainName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.UserName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $adminCreds.Password -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $connectionBroker -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $webAccessServer -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $externalFqdn -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $numberOfRdshInstances -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $sessionHostNamingPrefix -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $sessionHostNamingIndex -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $collectionName -Source ARM -EntryType Information
+	Write-EventLog -EventId 5000 -LogName Application -Message $collectionDescription -Source ARM -EntryType Information
+	
+	
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration -ModuleVersion 1.1
     Import-DscResource -ModuleName xActiveDirectory, xComputerManagement, xRemoteDesktopSessionHost
@@ -240,7 +268,7 @@ configuration RDSDeployment
     if ($sessionHostNamingPrefix)
     { 
 
-        $sessionHosts = @( $sessionHostNamingIndex..($sessionHostMaxIndex) | % { "$sessionHostNamingPrefix$_$domainname"} )
+        $sessionHosts = @( $sessionHostNamingIndex..($sessionHostMaxIndex) | % { "$sessionHostNamingPrefix$_.$domainname"} )
     }
     else
     {

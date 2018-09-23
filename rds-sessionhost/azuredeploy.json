@@ -166,20 +166,20 @@
             "type": "String"
         }
     },
-  "variables": {
-    "vmAPI": "2017-03-30",
-    "imagePublisher": "MicrosoftWindowsServer",
-    "imageOffer": "WindowsServer",
-    "ad-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
-    "rds-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('rdsSubnetName'))]",
-    "assetLocation": "https://raw.githubusercontent.com/elamathiJv/rds-ha-complete/master/rds-sessionhost/DSC/",
-    "gatewayIndex": "1",
-    "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
-    "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
-    "gatewayAvSetName": "[concat(parameters('availabilitySetPrefix'),'01')]",
-    "brokerAvSetName": "[concat(parameters('availabilitySetPrefix'),'02')]",
-    "sessionHostAvSetName": "[concat(parameters('availabilitySetPrefix'),'03')]"
-  },
+    "variables": {
+        "vmAPI": "2017-03-30",
+        "imagePublisher": "MicrosoftWindowsServer",
+        "imageOffer": "WindowsServer",
+        "ad-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
+        "rds-subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('rdsSubnetName'))]",
+        "assetLocation": "https://satbpamae7qam4m35g4n4.blob.core.windows.net/dscarm/",
+        "gatewayIndex": "1",
+        "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
+        "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
+        "gatewayAvSetName": "[concat(parameters('availabilitySetPrefix'),'01')]",
+        "brokerAvSetName": "[concat(parameters('availabilitySetPrefix'),'02')]",
+        "sessionHostAvSetName": "[concat(parameters('availabilitySetPrefix'),'03')]"
+    },
     "resources": [
         {
             "type": "Microsoft.Compute/availabilitySets",
@@ -390,37 +390,37 @@
                 "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
             ]
         },
-      {
-        "apiVersion": "2015-06-15",
-        "copy": {
-          "name": "rdsh-nic-loop",
-          "count": "[parameters('numberOfRdshInstances')]"
-        },
-        "dependsOn": [
-          "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
-        ],
-        "location": "[resourceGroup().location]",
-        "name": "[concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
-        "properties": {
-          "ipConfigurations": [
-            {
-              "name": "ipconfig",
-              "properties": {
-                "privateIPAllocationMethod": "Dynamic",
-                "subnet": {
-                  "id": "[variables('rds-subnet-id')]"
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "rdsh-nic-loop",
+                "count": "[parameters('numberOfRdshInstances')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('rds-subnet-id')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [
+                        "[parameters('dnsServerPrivateIp')]"
+                    ]
                 }
-              }
-            }
-          ],
-          "dnsSettings": {
-            "dnsServers": [
-              "[parameters('dnsServerPrivateIp')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/loadBalancers/', parameters('gatewayLoadbalancerName'))]"
             ]
-          }
         },
-        "type": "Microsoft.Network/networkInterfaces"
-      },
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'))]",
@@ -445,14 +445,14 @@
                         "sku": "[parameters('imageSKU')]",
                         "version": "latest"
                     },
-                  "osDisk": {
-                    "name": "[concat('MdO',parameters('vmPrefix'),0,variables('gatewayIndex'))]",
-                    "managedDisk": {
-                      "storageAccountType": "Standard_LRS"
-                    },
-                    "caching": "ReadWrite",
-                    "createOption": "FromImage"
-                  }
+                    "osDisk": {
+                        "name": "[concat('MdO',parameters('vmPrefix'),0,variables('gatewayIndex'))]",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -462,135 +462,127 @@
                     ]
                 }
             },
-          "resources": [
-            {
-              "apiVersion": "2018-04-01",
-              "type": "Microsoft.Compute/virtualMachines/extensions",
-              "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'),'/gateway')]",
-              "location": "[resourceGroup().location]",
-              "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.76",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "wmfVersion": "latest",
-                  "configuration": {
-                    "url": "[concat(variables('assetLocation'),'Configuration.zip')]",
-                    "script": "Configuration.ps1",
-                    "function": "Gateway"
-                  },
-                  "configurationArguments": {
-                    "DomainName": "[parameters('adDomainName')]",
-                    "AdminCreds": {
-                      "UserName": "[parameters('adminUsername')]",
-                      "Password": "PrivateSettingsRef:AdminPassword"
-                    }
-                  }
-                },
-                "protectedSettings": {
-                  "Items": {
-                    "AdminPassword": "[parameters('adminPassword')]"
-                  }
+            "resources": [
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmPrefix'),0,variables('gatewayIndex'),'/gateway')]",
+                    "apiVersion": "2015-06-15",
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.11",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ModulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
+                            "ConfigurationFunction": "Configuration.ps1\\Gateway",
+                            "Properties": {
+                                "DomainName": "[parameters('adDomainName')]",
+                                "AdminCreds": {
+                                    "UserName": "[parameters('adminUsername')]",
+                                    "Password": "PrivateSettingsRef:AdminPassword"
+                                }
+                            }
+                        },
+                        "protectedSettings": {
+                            "Items": {
+                                "AdminPassword": "[parameters('adminPassword')]"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('gatewayIndex')))]"
+                    ]
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('gatewayIndex')))]"
-              ]
-            }
-          ],
+            ],
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', variables('gatewayAvSetName'))]",
                 "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),0,variables('gatewayIndex')))]"
             ]
         },
-      {
-        "apiVersion": "[variables('vmAPI')]",
-        "copy": {
-          "name": "rdsh-vm-loop",
-          "count": "[parameters('numberOfRdshInstances')]"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]",
-          "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
-        ],
-        "location": "[resourceGroup().location]",
-        "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
-        "properties": {
-          "hardwareProfile": {
-            "vmSize": "[parameters('rdshVmSize')]"
-          },
-          "availabilitySet": {
-            "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]"
-          },
-          "osProfile": {
-            "computerName": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
-            "adminUsername": "[parameters('adminUsername')]",
-            "adminPassword": "[parameters('adminPassword')]"
-          },
-          "storageProfile": {
-            "imageReference": {
-              "publisher": "[variables('imagePublisher')]",
-              "offer": "[variables('imageOffer')]",
-              "sku": "[parameters('imageSKU')]",
-              "version": "latest"
-            },
-            "osDisk": {
-              "name": "[concat('MdO',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
-              "managedDisk": {
-                "storageAccountType": "Standard_LRS"
-              },
-              "caching": "ReadWrite",
-              "createOption": "FromImage"
-            }
-          },
-          "networkProfile": {
-            "networkInterfaces": [
-              {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
-              }
-            ]
-          }
-        },
-        "resources": [
-          {
-            "apiVersion": "2018-04-01",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()),'/sessionhost')]",
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+            "apiVersion": "[variables('vmAPI')]",
             "location": "[resourceGroup().location]",
-            "properties": {
-              "publisher": "Microsoft.Powershell",
-              "type": "DSC",
-              "typeHandlerVersion": "2.76",
-              "autoUpgradeMinorVersion": true,
-              "settings": {
-                "wmfVersion": "latest",
-                "configuration": {
-                  "url": "[concat(variables('assetLocation'),'Configuration.zip')]",
-                  "script": "Configuration.ps1",
-                  "function": "SessionHost"
-                },
-                "configurationArguments": {
-                  "DomainName": "[parameters('adDomainName')]",
-                  "AdminCreds": {
-                    "UserName": "[parameters('adminUsername')]",
-                    "Password": "PrivateSettingsRef:AdminPassword"
-                  }
-                }
-              },
-              "protectedSettings": {
-                "Items": {
-                  "AdminPassword": "[parameters('adminPassword')]"
-                }
-              }
+            "copy": {
+                "name": "rdsh-vm-loop",
+                "count": "[parameters('numberOfRdshInstances')]"
             },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('rdshVmSize')]"
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "[parameters('imageSKU')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('MdO',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()),'/sessionhost')]",
+                    "apiVersion": "2015-06-15",
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.11",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ModulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
+                            "ConfigurationFunction": "Configuration.ps1\\SessionHost",
+                            "Properties": {
+                                "DomainName": "[parameters('adDomainName')]",
+                                "AdminCreds": {
+                                    "UserName": "[parameters('adminUsername')]",
+                                    "Password": "PrivateSettingsRef:AdminPassword"
+                                }
+                            }
+                        },
+                        "protectedSettings": {
+                            "Items": {
+                                "AdminPassword": "[parameters('adminPassword')]"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                    ]
+                }
+            ],
             "dependsOn": [
-              "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
             ]
-          }
-        ],
-        "type": "Microsoft.Compute/virtualMachines"
-      },
+        },
         {
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'))]",
@@ -615,14 +607,14 @@
                         "sku": "[parameters('imageSKU')]",
                         "version": "latest"
                     },
-                  "osDisk": {
-                    "name": "[concat('MdO',parameters('vmPrefix'),0,variables('brokerIndex'))]",
-                    "managedDisk": {
-                      "storageAccountType": "Standard_LRS"
-                    },
-                    "caching": "ReadWrite",
-                    "createOption": "FromImage"
-                  }
+                    "osDisk": {
+                        "name": "[concat('MdO',parameters('vmPrefix'),0,variables('brokerIndex'))]",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -638,48 +630,44 @@
                 "rdsh-vm-loop"
             ]
         },
-      {
-        "apiVersion": "2018-04-01",
-        "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'),'/rdsdeployment')]",
-        "location": "[resourceGroup().location]",
-        "properties": {
-          "publisher": "Microsoft.Powershell",
-          "type": "DSC",
-          "typeHandlerVersion": "2.76",
-          "autoUpgradeMinorVersion": true,
-          "settings": {
-            "wmfVersion": "latest",
-            "configuration": {
-              "url": "[concat(variables('assetLocation'),'Configuration.zip')]",
-              "script": "Configuration.ps1",
-              "function": "RDSDeployment"
-            },
-            "configurationArguments": {
-              "adminCreds": {
-                "UserName": "[parameters('adminUsername')]",
-                "Password": "PrivateSettingsRef:adminPassword"
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'),'/rdsdeployment')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.11",
+                "autoUpgradeMinorVersion": true,
+              "settings": {
+                "modulesUrl": "[concat(variables('assetLocation'),'Configuration.zip')]",
+                "configurationFunction": "Configuration.ps1\\RDSDeployment",
+                "Properties": {
+                  "adminCreds": {
+                    "UserName": "[parameters('adminUsername')]",
+                    "Password": "PrivateSettingsRef:adminPassword"
+                  },
+                  "connectionBroker": "[concat(concat(parameters('vmPrefix'),0,variables('brokerIndex')),'.',parameters('adDomainName'))]",
+                  "domainName": "[parameters('adDomainName')]",
+                  "externalfqdn": "[concat(concat(parameters('vmPrefix'),0,variables('gatewayIndex')),'.',parameters('adDomainName'))]",
+                  "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
+                  "sessionHostNamingPrefix": "[parameters('vmPrefix')]",
+                  "sessionHostNamingIndex": "[variables('sessionHostIndex')]",
+                  "webAccessServer": "[concat(concat(parameters('vmPrefix'),0,variables('gatewayIndex')),'.',parameters('adDomainName'))]"
+                }
               },
-              "connectionBroker": "[concat(concat(parameters('vmPrefix'),0,variables('brokerIndex')),'.',parameters('adDomainName'))]",
-              "domainName": "[parameters('adDomainName')]",
-              "externalfqdn": "[concat(concat(parameters('vmPrefix'),0,variables('brokerIndex')),'.',parameters('adDomainName'))]",
-              "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
-              "sessionHostNamingPrefix": "[parameters('vmPrefix')]",
-              "sessionHostNamingIndex": "[variables('sessionHostIndex')]",
-              "webAccessServer": "[concat(concat(parameters('vmPrefix'),0,variables('gatewayIndex')),parameters('adDomainName'))]"
-            }
-          },
-          "protectedSettings": {
-            "Items": {
-              "adminPassword": "[parameters('adminPassword')]"
-            }
-          }
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('brokerIndex')))]",
-          "Microsoft.Compute/virtualMachines/VmWSBpamA01/extensions/gateway",
-          "rdsh-vm-loop"
-        ]
-      }
+                "protectedSettings": {
+                    "Items": {
+                        "adminPassword": "[parameters('adminPassword')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,variables('brokerIndex')))]",
+                "Microsoft.Compute/virtualMachines/VmWSBpamA01/extensions/gateway",
+                "rdsh-vm-loop"
+            ]
+        }
     ]
 }

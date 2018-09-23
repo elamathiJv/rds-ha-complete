@@ -20,9 +20,9 @@
     "domainNetbios": {
       "value": "adm"
     },
-    "storageAccountName": {
-      "value": ""
-    },
+    //"storageAccountName": {
+    //  "value": ""
+    //},
     "loadBalancer": {
       "value": "LbISBpamA01"
     },

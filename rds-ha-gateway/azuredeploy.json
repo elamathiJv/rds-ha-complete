@@ -149,7 +149,7 @@
     //  "location": "[resourceGroup().location]",
     //  "properties": {
     //    "accountType": "Standard_LRS"
-    //  }
+    // }
     //},
       {
       "type": "Microsoft.Compute/availabilitySets",

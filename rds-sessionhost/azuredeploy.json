@@ -65,23 +65,23 @@
         "numberOfGatewayInstances": {
             "defaultValue": 1,
             "type": "Int",
-            "metadata": {
-                "description": "Number of RemoteDesktopSessionHosts"
-            }
+          "metadata": {
+            "description": "Number of GatewayInstances"
+          }
         },
         "numberOfBrokerInstances": {
             "defaultValue": 1,
             "type": "Int",
-            "metadata": {
-                "description": "Number of RemoteDesktopSessionHosts"
-            }
+          "metadata": {
+            "description": "Number of BrokerInstances"
+          }
         },
         "numberOfRdshInstances": {
             "defaultValue": 2,
             "type": "Int",
-            "metadata": {
-                "description": "Number of RemoteDesktopSessionHosts"
-            }
+          "metadata": {
+            "description": "Number of RemoteDesktopInstances"
+          }
         },
         "gwVmSize": {
             "defaultValue": "Standard_A4",
@@ -175,7 +175,7 @@
         "assetLocation": "https://satbpamae7qam4m35g4n4.blob.core.windows.net/dscarm/",
         "gatewayIndex": "1",
         "brokerIndex": "[add(parameters('numberOfGatewayInstances'), 2)]",
-        "sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
+      //"sessionHostIndex": "[add(parameters('numberOfBrokerInstances'), add(parameters('numberOfGatewayInstances') ,3))]",
         "gatewayAvSetName": "[concat(parameters('availabilitySetPrefix'),'01')]",
         "brokerAvSetName": "[concat(parameters('availabilitySetPrefix'),'02')]",
         "sessionHostAvSetName": "[concat(parameters('availabilitySetPrefix'),'03')]"
@@ -392,7 +392,7 @@
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+            "name": "[concat('Nc',parameters('vmPrefix'),1,copyIndex())]",
             "apiVersion": "2015-06-15",
             "location": "[resourceGroup().location]",
             "copy": {
@@ -502,7 +502,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+            "name": "[concat(parameters('vmPrefix'),1,copyIndex())]",
             "apiVersion": "[variables('vmAPI')]",
             "location": "[resourceGroup().location]",
             "copy": {
@@ -517,7 +517,7 @@
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+                    "computerName": "[concat(parameters('vmPrefix'),1,copyIndex())]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -529,7 +529,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('MdO',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()))]",
+                        "name": "[concat('MdO',parameters('vmPrefix'),1,copyIndex())]",
                         "managedDisk": {
                             "storageAccountType": "Standard_LRS"
                         },
@@ -540,7 +540,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('Nc',parameters('vmPrefix'),1,copyIndex()))]"
                         }
                     ]
                 }
@@ -548,7 +548,7 @@
             "resources": [
                 {
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex()),'/sessionhost')]",
+                    "name": "[concat(parameters('vmPrefix'),1,copyIndex(),'/sessionhost')]",
                     "apiVersion": "2015-06-15",
                     "location": "[resourceGroup().location]",
                     "properties": {
@@ -574,13 +574,13 @@
                         }
                     },
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'),1,copyIndex()))]"
                     ]
                 }
             ],
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', variables('sessionHostAvSetName'))]",
-                "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),0,add(variables('sessionHostIndex'),copyIndex())))]"
+                "[concat('Microsoft.Network/networkInterfaces/',concat('Nc',parameters('vmPrefix'),1,copyIndex()))]"
             ]
         },
         {

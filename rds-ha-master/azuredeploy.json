@@ -207,56 +207,47 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "dnsLabelPrefix": {
-            "value": "[parameters('dnsLabelPrefix')]"
-          },
           "adDomainName": {
-            "value": "[parameters('adDomainName')]"
-          },
-          "adVnetName": {
-            "value": "[parameters('adVnetName')]"
+            "value": "adm.scalesquad.io"
           },
           "adVnetRG": {
-            "value": "[parameters('adVnetRG')]"
+            "value": "RgAdminZone"
+          },
+          "adVnetName": {
+            "value": "VnAdminZone"
           },
           "adSubnetName": {
-            "value": "[parameters('adSubnetName')]"
+            "value": "default"
+          },
+          "rdsSubnetName": {
+            "value": "RDSSubnet"
           },
           "adminUsername": {
-            "value": "[parameters('vmAdminUsername')]"
+            "value": "ejaganathan"
           },
           "adminPassword": {
-            "value": "[parameters('vmAdminPassword')]"
+            "value": "S@iy@nKing2116"
           },
-          "imageSKU": {
-            "value": "[parameters('imageSKU')]"
+          "numberOfBrokerInstances": {
+            "value": 1
           },
           "numberOfRdshInstances": {
-            "value": "[parameters('numberOfRdshInstances')]"
+            "value": 2
           },
-          "rdshVmSize": {
-            "value": "[parameters('rdshVmSize')]"
+          "dnsServerPrivateIp": {
+            "value": "10.40.0.4"
           },
-          "location": {
-            "value": "[parameters('location')]"
+          "vmPrefix": {
+            "value": "VmWSBpamA"
           },
-          "publicIpRef": {
-            "value": "[parameters('publicIpRef')]"
+          "vmCreationIndex": {
+            "value": 0
           },
-          "brokerIpRef": {
-            "value": "[parameters('brokerIpRef')]"
+          "availabilitySetPrefix": {
+            "value": "AsSBpamA"
           },
-          "gatewayIpRef": {
-            "value": "[parameters('gatewayIpRef')]"
-          },
-          "cb-nic-name": {
-            "value": "[parameters('cb-nic-name')]"
-          },
-          "gw-nic-name": {
-            "value": "[parameters('gw-nic-name')]"
-          },
-          "rds-nic-name": {
-            "value": "[parameters('rds-nic-name')]"
+          "gatewayLoadbalancerName": {
+            "value": "LbISBpamA01"
           }
         }
       }
@@ -276,68 +267,50 @@
         },
         "parameters": {
           "dnsLabelPrefix": {
-            "value": "[parameters('dnsLabelPrefix')]"
-          },
-          "loadBalancer": {
-            "value": "[parameters('loadBalancer')]"
-          },
-          "backendAddressPools": {
-            "value": "[parameters('backendAddressPools')]"
-          },
-          "gw-AvailabilitySet": {
-            "value": "[variables('rds-ha-gateway-availablilitySet-name')]"
+            "value": "adaprds"
           },
           "adDomainName": {
-            "value": "[parameters('adDomainName')]"
+            "value": "adm.scalesquad.io"
           },
           "adminUsername": {
-            "value": "[parameters('adminUsername')]"
-          },
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
-          },
-          "numberOfWebGwInstances": {
-            "value": "[parameters('numberOfWebGwInstances')]"
+            "value": "ssubramanian"
           },
           "brokerServer": {
-            "value": "[variables('rds-ha-brokerServer-fqdn-internal-name')]"
+            "value": "VmWSBpamA03"
           },
           "WebURL": {
-            "value": "[variables('rds-ha-gateway-fqdn-external-name')]"
+            "value": "VmWSBpamA01.adm.scalesquad.io"
           },
           "domainNetbios": {
-            "value": "[parameters('domainNetbios')]"
+            "value": "adm"
           },
-          "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
+          //"storageAccountName": {
+          //  "value": ""
+          //},
+          "loadBalancer": {
+            "value": "LbISBpamA01"
           },
-          "imageSKU": {
-            "value": "[parameters('imageSKU')]"
+          "gw-AvailabilitySet": {
+            "value": "AsSBpamA01"
           },
-          "vmSize": {
-            "value": "[parameters('rdshVmSize')]"
-          },
-          "existingVnet": {
-            "value": "[parameters('adVnetName')]"
-          },
-          "existingSubnet": {
-            "value": "[parameters('adSubnetName')]"
+          "adminPassword": {
+            "value": "s@nth0sh12345"
           },
           "adVnetRG": {
-            "value": "[parameters('adVnetRG')]"
+            "value": "RgAdminZone"
           },
-          "publicIpRef": {
-            "value": "[parameters('publicIpRef')]"
+          "adVnetName": {
+            "value": "VnAdminZone"
           },
-          "brokerIpRef": {
-            "value": "[parameters('brokerIpRef')]"
+          "adSubnetName": {
+            "value": "default"
           },
-          "gatewayIpRef": {
-            "value": "[parameters('gatewayIpRef')]"
+          "rdsSubnetName": {
+            "value": "RDSSubnet"
+          },
+          "vmPrefix": {
+            "value": "VmWSBpamA"
           }
-        },
-        "2nd-gw-nic-name": {
-          "value": "[parameters('2nd-gw-nic-name')]"
         }
       }
     },
@@ -365,7 +338,7 @@
           },
           "dnsServer": {
             "type": "string",
-            "defaultValue": "addc-01",
+            "defaultValue": "VmWTRdsAd01",
             "metadata": {
               "description": "The name of the DNS Server to add the DNS entry to for the Connection Broker Names"
             }
@@ -378,21 +351,21 @@
           },
           "existingAdminUsername": {
             "type": "string",
-            "defaultValue": "cloudAdmin",
+            "defaultValue": "ssubramanian",
             "metadata": {
               "description": "Name of domain user account with administrative priveledges to manage RDS deployment"
             }
           },
           "existingBrokerAvailabilitySet": {
             "type": "string",
-            "defaultValue": "cb-availabilityset",
+            "defaultValue": "AsSBpamA02",
             "metadata": {
               "description": "Availability set for RD Connection Brokers"
             }
           },
           "existingBrokerHostname": {
             "type": "string",
-            "defaultValue": "rdcb-01",
+            "defaultValue": "VmWSBpamA02",
             "metadata": {
               "description": "The host name of the existing Connection Broker vm"
             }
@@ -405,14 +378,28 @@
           },
           "existingSubnetName": {
             "type": "string",
-            "defaultValue": "Subnet",
+            "defaultValue": "default",
             "metadata": {
               "description": "Subnet name"
             }
           },
           "existingVnetName": {
             "type": "string",
-            "defaultValue": "vnet",
+            "defaultValue": "VnAdminZone",
+            "metadata": {
+              "description": "Virtual network name"
+            }
+          },
+          "existingVnetRGName": {
+            "type": "string",
+            "defaultValue": "RgAdminZone",
+            "metadata": {
+              "description": "Virtual network name"
+            }
+          },
+          "RdsSubnetName": {
+            "type": "string",
+            "defaultValue": "RDSSubnet",
             "metadata": {
               "description": "Virtual network name"
             }
@@ -423,13 +410,13 @@
               "description": "Specifies the database primary connection string. The database connection string supports both high availability configurations: -- Dedicated database server. Uses Windows Authentication to connect to the databse. -- Shared database server. Uses database authentication (such as SQL authentication) with a user name and password to connect to the database."
             }
           },
-          "sqlServer": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-              "description": "The name of the SQL server that the database is located on (only required for the Dedicated database server case w/Windows Auth)"
-            }
-          },
+          //"sqlServer": {
+          //  "type": "string",
+          //  "defaultValue": "",
+          //  "metadata": {
+          //    "description": "The name of the SQL server that the database is located on (only required for the Dedicated database server case w/Windows Auth)"
+          //  }
+          //},
           "windowsServerVersion": {
             "type": "string",
             "allowedValues": [
@@ -441,18 +428,27 @@
             },
             "defaultValue": "2016-Datacenter"
           },
-          "_artifactsLocation": {
+          "artifactsLocation": {
             "type": "string",
             "metadata": {
               "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             },
             "defaultValue": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/rds-deployment-ha-broker/"
+          },
+          "numberOfGatewayInstances": {
+            "type": "int",
+            "defaultValue": 2,
+            "metadata": {
+              "description": "Number of RemoteDesktopSessionHosts"
+            }
+          },
+          "vmPrefix": {
+            "type": "string"
           }
         }
       }
     }
                 ],
-  "outputs": {
-    
+  "outputs": {    
   }
 }

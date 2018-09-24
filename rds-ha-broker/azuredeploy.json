@@ -248,29 +248,29 @@
           }
         }
       }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'),'/ha-broker-configuration')]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'),0,variables('brokerIndex'),'/extensions/','configuration')]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Compute",
-        "type": "CustomScriptExtension",
-        "typeHandlerVersion": "1.8",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "fileUris": [
-            "[concat(variables('scriptLocation'), '/', variables('scriptFileName'))]"
-          ]
-        },
-        "protectedSettings": {
-          "commandToExecute": "[concat( 'powershell -noninteractive -executionpolicy bypass -file ', variables('scriptFileName'), variables('scriptParameters'), ' >> script.log 2>&1' )]"
-        }
-      }
     }
+    //{
+    //  "apiVersion": "2015-06-15",
+    //  "name": "[concat(parameters('vmPrefix'),0,variables('brokerIndex'),'/ha-broker-configuration')]",
+    //  "type": "Microsoft.Compute/virtualMachines/extensions",
+    //  "location": "[resourceGroup().location]",
+    //  "dependsOn": [
+    //    "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'),0,variables('brokerIndex'),'/extensions/','configuration')]"
+    //  ],
+    //  "properties": {
+    //    "publisher": "Microsoft.Compute",
+    //    "type": "CustomScriptExtension",
+    //    "typeHandlerVersion": "1.8",
+    //    "autoUpgradeMinorVersion": true,
+    //    "settings": {
+    //      "fileUris": [
+    //        "[concat(variables('scriptLocation'), '/', variables('scriptFileName'))]"
+    //      ]
+    //    },
+    //    "protectedSettings": {
+    //      "commandToExecute": "[concat( 'powershell -noninteractive -executionpolicy bypass -file ', variables('scriptFileName'), variables('scriptParameters'), ' >> script.log 2>&1' )]"
+    //    }
+    //  }
+    //}
   ]
 }

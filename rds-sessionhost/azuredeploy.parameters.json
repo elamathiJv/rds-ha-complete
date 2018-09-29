@@ -18,10 +18,10 @@
       "value": "RDSSubnet"
     },
     "adminUsername": {
-      "value": "ejaganathan"
+      "value": "ssubramanian"
     },
     "adminPassword": {
-      "value": "S@iy@nKing2116"
+      "value": "s@nth0sh12345"
     },
     "numberOfBrokerInstances": {
       "value": 1
@@ -35,14 +35,17 @@
     "vmPrefix": {
       "value": "VmWSBpamA"
     },
-    "vmCreationIndex": {
-      "value": 0
-    },
     "availabilitySetPrefix": {
       "value": "AsSBpamA"
     },
     "gatewayLoadbalancerName": {
       "value": "LbISBpamA01"
+    },
+    "gwVmSize": {
+      "value": "Standard_B2s"
+    },
+    "cbVmSize": {
+      "value": "Standard_B2s"
     }
   }
 }

@@ -84,7 +84,7 @@
       }
     },
     "gwVmSize": {
-      "defaultValue": "Standard_A1_v2",
+      "defaultValue": "Standard_B2s",
       "allowedValues": [
         "Standard_B2s"
       ],
@@ -94,7 +94,7 @@
       }
     },
     "cbVmSize": {
-      "defaultValue": "Standard_A1_v2",
+      "defaultValue": "Standard_B2s",
       "allowedValues": [
         "Standard_B2s"
       ],

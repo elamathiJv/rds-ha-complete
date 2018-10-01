@@ -2,50 +2,50 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dnsLabelPrefix": {
-     "value": "adaprds"
-    },
+    //"dnsLabelPrefix": {
+    // "value": "adaprds"
+    //},
     "adDomainName": {
-      "value": "adm.scalesquad.io"
+      "value": "usr.ingenico.loc"
     },
     "adminUsername": {
-      "value": "ssubramanian"
+      "value": "sassubramanian"
     },
     "brokerServer": {
       "value": "VmWSBpamA03"
     },
     "WebURL": {
-      "value": "VmWSBpamA01.adm.scalesquad.io"
+      "value": "bpama-ingenicogroup.msappproxy.net"
     },
     "domainNetbios": {
-      "value": "adm"
+      "value": "usr"
     },
     //"storageAccountName": {
     //  "value": ""
     //},
-    "loadBalancer": {
-      "value": "LbISBpamA01"
-    },
     "gw-AvailabilitySet": {
       "value": "AsSBpamA01"
     },
     "adminPassword": {
-      "value": "s@nth0sh12345"
+      "value": "kJMJ9wZcHMESY7zpiKjD"
     },
     "adVnetRG": {
-      "value": "RgAdminZone"
+      "value": "RgSNtwkA01"
     },
     "adVnetName": {
-      "value": "VnAdminZone"
+      "value": "VnSEu201"
     },
     "adSubnetName": {
-      "value": "default"
+      "value": "SnSApp01"
     },
     "rdsSubnetName": {
-      "value": "RDSSubnet"
+      "value": "SnSApp01"
     },
     "vmPrefix": {
       "value": "VmWSBpamA"
+    },
+    "gatewayLoadbalancerName": {
+      "value": "LbISBpamA01"
     }
   }
 }

@@ -3,25 +3,25 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adDomainName": {
-      "value": "adm.scalesquad.io"
+      "value": "usr.ingenico.loc"
     },
     "adVnetRG": {
-      "value": "RgAdminZone"
+      "value": "RgSNtwkA01"
     },
     "adVnetName": {
-      "value": "VnAdminZone"
+      "value": "VnSEu201"
     },
     "adSubnetName": {
-      "value": "default"
+      "value": "SnSApp01"
     },
     "rdsSubnetName": {
-      "value": "RDSSubnet"
+      "value": "SnSApp01"
     },
     "adminUsername": {
-      "value": "ssubramanian"
+      "value": "sassubramanian"
     },
     "adminPassword": {
-      "value": "s@nth0sh12345"
+      "value": "kJMJ9wZcHMESY7zpiKjD"
     },
     "numberOfBrokerInstances": {
       "value": 1
@@ -30,7 +30,7 @@
       "value": 2
     },
     "dnsServerPrivateIp": {
-      "value": "10.40.0.4"
+      "value": "10.1.1.13"
     },
     "vmPrefix": {
       "value": "VmWSBpamA"
@@ -46,6 +46,9 @@
     },
     "cbVmSize": {
       "value": "Standard_B2s"
+    },
+    "brokerLoadbalancerName": {
+      "value": "LbISBpamA02"
     }
   }
 }
